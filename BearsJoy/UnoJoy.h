@@ -215,7 +215,7 @@
     controllerData.dpadLeftOn = 0;
     controllerData.dpadUpOn = 0;
     controllerData.dpadRightOn = 0;
-    controllerData.dpadDownOn = 0;  
+    controllerData.dpadDownOn = 0;
     controllerData.selectOn = 0;
     controllerData.startOn = 0;
     controllerData.homeOn = 0;
