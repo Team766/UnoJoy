@@ -16,7 +16,7 @@ void setupPins(void){
   // Set all the digital pins as inputs
   // with the pull-up enabled, except for the 
   // two serial line pins
-  for (int i = 2; i <= 12; i++){
+  for (int i = 2; i <= 13; i++){
     pinMode(i, INPUT);
     digitalWrite(i, HIGH);
   }
@@ -34,12 +34,21 @@ void setupPins(void){
   digitalWrite(A5, HIGH);
 }
 
-bool readDigitalFromAnalog(uint32_t port){
-    return ((analogRead(port) >> 2) > 128);
+bool readDigitalFromAnalog(int port){\
+  //  Since analogRead(pin) returns a 10 bit value,
+  //  we need to perform a bit shift operation to
+  //  lose the 2 least significant bits and get an
+  //  8 bit number that we can use 
+  return analogRead(port) > 512;
 }
 
 dataForController_t getControllerData(void){
-  bool negate_all = false;
+  // Since our buttons are all held high and
+  //   pulled low when pressed, we negate the
+  //   readings from the pins
+  // If your controller doesn't rely on the
+  //   Arduino's pullup resistors
+  bool negate_all = true;
   
   // Set up a place for our controller data
   //  Use the getBlankDataForController() function, since
@@ -47,9 +56,7 @@ dataForController_t getControllerData(void){
   //  to get you one filled with junk from other, random
   //  values that were in those memory locations before
   dataForController_t controllerData = getBlankDataForController();
-  // Since our buttons are all held high and
-  //  pulled low when pressed, we use the "!"
-  //  operator to invert the readings from the pins
+  
   controllerData.triangleOn = negate_all ^ digitalRead(2);
   controllerData.circleOn = negate_all ^ digitalRead(3);
   controllerData.squareOn = negate_all ^ digitalRead(4);
@@ -63,11 +70,6 @@ dataForController_t getControllerData(void){
   controllerData.dpadRightOn = negate_all ^ digitalRead(12);
   controllerData.dpadDownOn = negate_all ^ digitalRead(13);
 
-  // Set the analog sticks
-  //  Since analogRead(pin) returns a 10 bit value,
-  //  we need to perform a bit shift operation to
-  //  lose the 2 least significant bits and get an
-  //  8 bit number that we can use  
   controllerData.selectOn = readDigitalFromAnalog(A4);
   controllerData.startOn = readDigitalFromAnalog(A5);
   controllerData.homeOn = readDigitalFromAnalog(A6);
